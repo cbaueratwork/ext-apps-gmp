@@ -476,12 +476,12 @@ Host SHOULD add the message to the conversation thread, preserving the specified
 
 `ui/notifications/tool-input` - Host MUST send this notification with the complete tool arguments after the Guest UI's initialize request completes.
 
-```json
+```typescript
 {
-  "jsonrpc": "2.0",
-  "method": "ui/notifications/tool-input",
-  "params": {
-    "arguments": "Record<string, unknown>"  // Tool input arguments
+  jsonrpc: "2.0",
+  method: "ui/notifications/tool-input",
+  params: {
+    arguments: Record<string, unknown>  // Tool input arguments
   }
 }
 ```
@@ -490,12 +490,12 @@ Host sends this notification after the Guest UI's initialize request completes, 
 
 `ui/notifications/tool-input-partial` - Host MAY send this notification zero or more times while the agent is streaming tool arguments, before `ui/notifications/tool-input` is sent.
 
-```json
+```typescript
 {
-  "jsonrpc": "2.0",
-  "method": "ui/notifications/tool-input-partial",
-  "params": {
-    "arguments": "Record<string, unknown>"  // Tool input arguments
+  jsonrpc: "2.0",
+  method: "ui/notifications/tool-input-partial",
+  params: {
+    arguments: Record<string, unknown>  // Tool input arguments
   }
 }
 ```
@@ -515,11 +515,11 @@ Guest UI behavior (optional):
 
 `ui/notifications/tool-result` - Tool execution result
 
-```json
+```typescript
 {
-  "jsonrpc": "2.0",
-  "method": "ui/notifications/tool-result",
-  "params": "CallToolResult"  // Standard MCP type
+  jsonrpc: "2.0",
+  method: "ui/notifications/tool-result",
+  params: CallToolResult  // Standard MCP type
 }
 ```
 
@@ -527,12 +527,12 @@ Host MUST send this notification when tool execution completes (if UI is display
 
 `ui/tool-cancelled` - Tool execution was cancelled
 
-```json
+```typescript
 {
-  "jsonrpc": "2.0",
-  "method": "ui/tool-cancelled",
-  "params": {
-    "reason": "string"
+  jsonrpc: "2.0",
+  method: "ui/tool-cancelled",
+  params: {
+    reason: string
   }
 }
 ```
@@ -541,30 +541,30 @@ Host MUST send this notification if the tool execution was cancelled, for any re
 
 `ui/resource-teardown` - Host notifies UI before teardown
 
-```json
+```typescript
 {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "ui/resource-teardown",
-  "params": {
-    "reason": "string"
+  jsonrpc: "2.0",
+  id: 1,
+  method: "ui/resource-teardown",
+  params: {
+    reason: string
   }
 }
 
 // Success Response
 {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {}  // Empty result on success
+  jsonrpc: "2.0",
+  id: 1,
+  result: {}  // Empty result on success
 }
 
 // Error Response (if failed)
 {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "error": {
-    "code": -32000,  // Implementation-defined error
-    "message": "Teardown error"
+  jsonrpc: "2.0",
+  id: 1,
+  error: {
+    code: -32000,  // Implementation-defined error
+    message: "Teardown error"
   }
 }
 ```
@@ -574,13 +574,13 @@ Host SHOULD wait for a response before tearing down the resource (to prevent dat
 
 `ui/size-change` - UI’s size changed
 
-```json
+```typescript
 {
-  "jsonrpc": "2.0",
-  "method": "ui/size-change",
-  "params": {
-    "width": "number",   // Viewport width in pixels
-    "height": "number"   // Viewport height in pixels
+  jsonrpc: "2.0",
+  method: "ui/size-change",
+  params: {
+    width: number,   // Viewport width in pixels
+    height: number   // Viewport height in pixels
   }
 }
 ```
@@ -589,11 +589,11 @@ Guest UI SHOULD send this notification when rendered content body size changes (
 
 `ui/host-context-change` - Host context has changed
 
-```json
+```typescript
 {
-  "jsonrpc": "2.0",
-  "method": "ui/host-context-change",
-  "params": "Partial<HostContext>"  // See HostContext type above
+  jsonrpc: "2.0",
+  method: "ui/host-context-change",
+  params: Partial<HostContext>  // See HostContext type above
 }
 ```
 
@@ -605,23 +605,23 @@ These messages are reserved for web-based hosts that implement the recommended d
 
 `ui/notifications/sandbox-ready` (Sandbox Proxy → Host) - Sandbox proxy is ready
 
-```json
+```typescript
 {
-  "jsonrpc": "2.0",
-  "method": "ui/notifications/sandbox-ready",
-  "params": {}
+  jsonrpc: "2.0",
+  method: "ui/notifications/sandbox-ready",
+  params: {}
 }
 ```
 
 `ui/notifications/sandbox-resource-ready` (Host → Sandbox Proxy) - HTML resource ready to load
 
-```json
+```typescript
 {
-  "jsonrpc": "2.0",
-  "method": "ui/notifications/sandbox-resource-ready",
-  "params": {
-    "html": "string",        // HTML content to load
-    "sandbox": "string"      // Optional override for inner iframe `sandbox` attribute
+  jsonrpc: "2.0",
+  method: "ui/notifications/sandbox-resource-ready",
+  params: {
+    html: string,        // HTML content to load
+    sandbox: string      // Optional override for inner iframe `sandbox` attribute
   }
 }
 ```
