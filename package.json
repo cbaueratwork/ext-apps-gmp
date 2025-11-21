@@ -14,8 +14,8 @@
       "default": "./dist/src/react/index.js",
       "types": "./dist/src/react/index.d.ts"
     },
-    "./app-host": {
-      "default": "./dist/src/app-host.js",
+    "./app-bridge": {
+      "default": "./dist/src/app-bridge.js",
       "types": "./dist/src/app-host.d.ts"
     }
   },

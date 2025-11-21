@@ -48,7 +48,7 @@ type HostOptions = ProtocolOptions;
 
 export const SUPPORTED_PROTOCOL_VERSIONS = [LATEST_PROTOCOL_VERSION];
 
-export class AppHost extends Protocol<Request, Notification, Result> {
+export class AppBridge extends Protocol<Request, Notification, Result> {
   oninitialized?: () => void;
 
   private _appCapabilities?: McpUiAppCapabilities;
