@@ -174,8 +174,8 @@ The resource content is returned via `resources/read`:
     _meta?: {
       ui?: {
         csp?: {
-          connect_domains?: string[];  // Origins for fetch/XHR/WebSocket
-          resource_domains?: string[]; // Origins for images, scripts, etc
+          connectDomains?: string[];  // Origins for fetch/XHR/WebSocket
+          resourceDomains?: string[]; // Origins for images, scripts, etc
         };
         domain?: string;
         prefersBorder?: boolean;
@@ -228,8 +228,8 @@ Example:
     "_meta": {
       "ui" : {
         "csp": {
-          "connect_domains": ["https://api.openweathermap.org"],
-          "resource_domains": ["https://cdn.jsdelivr.net"]
+          "connectDomains": ["https://api.openweathermap.org"],
+          "resourceDomains": ["https://cdn.jsdelivr.net"]
         },
         "prefersBorder": true
       }
@@ -1111,9 +1111,9 @@ const cspValue = `
   default-src 'none';
   script-src 'self' 'unsafe-inline';
   style-src 'self' 'unsafe-inline';
-  connect-src 'self' ${csp?.connect_domains?.join(' ') || ''};
-  img-src 'self' data: ${csp?.resource_domains?.join(' ') || ''};
-  font-src 'self' ${csp?.resource_domains?.join(' ') || ''};
+  connect-src 'self' ${csp?.connectDomains?.join(' ') || ''};
+  img-src 'self' data: ${csp?.resourceDomains?.join(' ') || ''};
+  font-src 'self' ${csp?.resourceDomains?.join(' ') || ''};
   frame-src 'none';
   object-src 'none';
   base-uri 'self';
