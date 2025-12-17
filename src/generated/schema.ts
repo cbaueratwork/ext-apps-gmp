@@ -532,103 +532,114 @@ export const McpUiToolResultNotificationSchema = z.object({
 /**
  * @description Rich context about the host environment provided to Guest UIs.
  */
-export const McpUiHostContextSchema = z
-  .object({
-    /** @description Metadata of the tool call that instantiated this App. */
-    toolInfo: z
-      .object({
-        /** @description JSON-RPC id of the tools/call request. */
-        id: RequestIdSchema.describe("JSON-RPC id of the tools/call request."),
-        /** @description Tool definition including name, inputSchema, etc. */
-        tool: ToolSchema.describe(
-          "Tool definition including name, inputSchema, etc.",
-        ),
-      })
-      .optional()
-      .describe("Metadata of the tool call that instantiated this App."),
-    /** @description Current color theme preference. */
-    theme: McpUiThemeSchema.optional().describe(
-      "Current color theme preference.",
+export const McpUiHostContextSchema = z.looseObject({
+  /** @description Metadata of the tool call that instantiated this App. */
+  toolInfo: z
+    .object({
+      /** @description JSON-RPC id of the tools/call request. */
+      id: RequestIdSchema.describe("JSON-RPC id of the tools/call request."),
+      /** @description Tool definition including name, inputSchema, etc. */
+      tool: ToolSchema.describe(
+        "Tool definition including name, inputSchema, etc.",
+      ),
+    })
+    .optional()
+    .describe("Metadata of the tool call that instantiated this App."),
+  /** @description Current color theme preference. */
+  theme: McpUiThemeSchema.optional().describe(
+    "Current color theme preference.",
+  ),
+  /** @description Style configuration for theming the app. */
+  styles: McpUiHostStylesSchema.optional().describe(
+    "Style configuration for theming the app.",
+  ),
+  /** @description How the UI is currently displayed. */
+  displayMode: McpUiDisplayModeSchema.optional().describe(
+    "How the UI is currently displayed.",
+  ),
+  /** @description Display modes the host supports. */
+  availableDisplayModes: z
+    .array(z.string())
+    .optional()
+    .describe("Display modes the host supports."),
+  /**
+   * @description Viewport dimensions available to the UI.
+   *
+   * The viewport has two independent dimension pairs:
+   * - Height: Either `height` (fixed) or `maxHeight` (flexible), never both
+   * - Width: Either `width` (fixed) or `maxWidth` (flexible), never both
+   *
+   * Fixed dimensions (height/width): The host controls the size. Set height: 100% (recommended) or use the pixel value directly.
+   * Flexible dimensions (maxHeight/maxWidth or undefined): The app controls the size, up to the max if specified. If undefined, there is no limit.
+   */
+  viewport: z
+    .union([
+      z.object({
+        height: z.number(),
+      }),
+      z.object({
+        maxHeight: z.number().optional(),
+      }),
+    ])
+    .and(
+      z.union([
+        z.object({
+          width: z.number(),
+        }),
+        z.object({
+          maxWidth: z.number().optional(),
+        }),
+      ]),
+    )
+    .optional()
+    .describe(
+      "Viewport dimensions available to the UI.\n\nThe viewport has two independent dimension pairs:\n- Height: Either `height` (fixed) or `maxHeight` (flexible), never both\n- Width: Either `width` (fixed) or `maxWidth` (flexible), never both\n\nFixed dimensions (height/width): The host controls the size. Set height: 100% (recommended) or use the pixel value directly.\nFlexible dimensions (maxHeight/maxWidth or undefined): The app controls the size, up to the max if specified. If undefined, there is no limit.",
     ),
-    /** @description Style configuration for theming the app. */
-    styles: McpUiHostStylesSchema.optional().describe(
-      "Style configuration for theming the app.",
-    ),
-    /** @description How the UI is currently displayed. */
-    displayMode: McpUiDisplayModeSchema.optional().describe(
-      "How the UI is currently displayed.",
-    ),
-    /** @description Display modes the host supports. */
-    availableDisplayModes: z
-      .array(z.string())
-      .optional()
-      .describe("Display modes the host supports."),
-    /** @description Current and maximum dimensions available to the UI. */
-    viewport: z
-      .object({
-        /** @description Current viewport width in pixels. */
-        width: z.number().describe("Current viewport width in pixels."),
-        /** @description Current viewport height in pixels. */
-        height: z.number().describe("Current viewport height in pixels."),
-        /** @description Maximum available height in pixels (if constrained). */
-        maxHeight: z
-          .number()
-          .optional()
-          .describe("Maximum available height in pixels (if constrained)."),
-        /** @description Maximum available width in pixels (if constrained). */
-        maxWidth: z
-          .number()
-          .optional()
-          .describe("Maximum available width in pixels (if constrained)."),
-      })
-      .optional()
-      .describe("Current and maximum dimensions available to the UI."),
-    /** @description User's language and region preference in BCP 47 format. */
-    locale: z
-      .string()
-      .optional()
-      .describe("User's language and region preference in BCP 47 format."),
-    /** @description User's timezone in IANA format. */
-    timeZone: z.string().optional().describe("User's timezone in IANA format."),
-    /** @description Host application identifier. */
-    userAgent: z.string().optional().describe("Host application identifier."),
-    /** @description Platform type for responsive design decisions. */
-    platform: z
-      .union([z.literal("web"), z.literal("desktop"), z.literal("mobile")])
-      .optional()
-      .describe("Platform type for responsive design decisions."),
-    /** @description Device input capabilities. */
-    deviceCapabilities: z
-      .object({
-        /** @description Whether the device supports touch input. */
-        touch: z
-          .boolean()
-          .optional()
-          .describe("Whether the device supports touch input."),
-        /** @description Whether the device supports hover interactions. */
-        hover: z
-          .boolean()
-          .optional()
-          .describe("Whether the device supports hover interactions."),
-      })
-      .optional()
-      .describe("Device input capabilities."),
-    /** @description Mobile safe area boundaries in pixels. */
-    safeAreaInsets: z
-      .object({
-        /** @description Top safe area inset in pixels. */
-        top: z.number().describe("Top safe area inset in pixels."),
-        /** @description Right safe area inset in pixels. */
-        right: z.number().describe("Right safe area inset in pixels."),
-        /** @description Bottom safe area inset in pixels. */
-        bottom: z.number().describe("Bottom safe area inset in pixels."),
-        /** @description Left safe area inset in pixels. */
-        left: z.number().describe("Left safe area inset in pixels."),
-      })
-      .optional()
-      .describe("Mobile safe area boundaries in pixels."),
-  })
-  .passthrough();
+  /** @description User's language and region preference in BCP 47 format. */
+  locale: z
+    .string()
+    .optional()
+    .describe("User's language and region preference in BCP 47 format."),
+  /** @description User's timezone in IANA format. */
+  timeZone: z.string().optional().describe("User's timezone in IANA format."),
+  /** @description Host application identifier. */
+  userAgent: z.string().optional().describe("Host application identifier."),
+  /** @description Platform type for responsive design decisions. */
+  platform: z
+    .union([z.literal("web"), z.literal("desktop"), z.literal("mobile")])
+    .optional()
+    .describe("Platform type for responsive design decisions."),
+  /** @description Device input capabilities. */
+  deviceCapabilities: z
+    .object({
+      /** @description Whether the device supports touch input. */
+      touch: z
+        .boolean()
+        .optional()
+        .describe("Whether the device supports touch input."),
+      /** @description Whether the device supports hover interactions. */
+      hover: z
+        .boolean()
+        .optional()
+        .describe("Whether the device supports hover interactions."),
+    })
+    .optional()
+    .describe("Device input capabilities."),
+  /** @description Mobile safe area boundaries in pixels. */
+  safeAreaInsets: z
+    .object({
+      /** @description Top safe area inset in pixels. */
+      top: z.number().describe("Top safe area inset in pixels."),
+      /** @description Right safe area inset in pixels. */
+      right: z.number().describe("Right safe area inset in pixels."),
+      /** @description Bottom safe area inset in pixels. */
+      bottom: z.number().describe("Bottom safe area inset in pixels."),
+      /** @description Left safe area inset in pixels. */
+      left: z.number().describe("Left safe area inset in pixels."),
+    })
+    .optional()
+    .describe("Mobile safe area boundaries in pixels."),
+});
 
 /**
  * @description Notification that host context has changed (Host -> Guest UI).

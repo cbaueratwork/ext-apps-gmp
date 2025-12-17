@@ -461,13 +461,18 @@ interface HostContext {
   displayMode?: "inline" | "fullscreen" | "pip";
   /** Display modes the host supports */
   availableDisplayModes?: string[];
-  /** Current and maximum dimensions available to the UI */
-  viewport?: {
-    width: number;
-    height: number;
-    maxHeight?: number;
-    maxWidth?: number;
-  };
+  /**
+   * Viewport dimensions available to the UI.
+   *
+   * The viewport has two independent dimension pairs:
+   * - Height: Either `height` (fixed) or `maxHeight` (flexible), never both
+   * - Width: Either `width` (fixed) or `maxWidth` (flexible), never both
+   *
+   * Fixed dimensions (height/width): The host controls the size. Set height: 100% (recommended) or use the pixel value directly.
+   * Flexible dimensions (maxHeight/maxWidth or undefined): The app controls the size, up to the max if specified.
+   */
+  viewport?: ({ height: number } | { maxHeight?: number }) &
+    ({ width: number } | { maxWidth?: number });
   /** User's language/region preference (BCP 47, e.g., "en-US") */
   locale?: string;
   /** User's timezone (IANA, e.g., "America/New_York") */
@@ -516,11 +521,75 @@ Example:
         }
       },
       "displayMode": "inline",
-      "viewport": { "width": 400, "height": 300 }
+      "viewport": { "width": 400, "maxHeight": 600 }
     }
   }
 }
 ```
+
+### Viewport and Sizing
+
+The `viewport` field in `HostContext` communicates sizing constraints between host and app. Each dimension (height and width) operates independently and can be either **fixed** or **flexible**.
+
+#### Viewport Modes
+
+| Mode | Viewport Field | Meaning |
+|------|---------------|---------|
+| Fixed | `height` or `width` | Host controls the size. App should fill the available space. |
+| Flexible | `maxHeight` or `maxWidth` | App controls the size, up to the specified maximum. |
+| Unbounded | Field omitted | App controls the size with no limit. |
+
+These modes can be combined independently. For example, a host might specify a fixed width but flexible height, allowing the app to grow vertically based on content.
+
+#### App Behavior
+
+Apps should check the viewport configuration and apply appropriate CSS:
+
+```typescript
+// In the app's initialization
+const viewport = hostContext.viewport;
+
+if (viewport) {
+  // Handle height
+  if ("height" in viewport) {
+    // Fixed height: fill the container
+    document.body.style.height = "100%";
+  } else if (viewport.maxHeight) {
+    // Flexible with max: let content determine size, up to max
+    document.body.style.maxHeight = `${viewport.maxHeight}px`;
+  }
+  // If neither, height is unbounded
+
+  // Handle width
+  if ("width" in viewport) {
+    // Fixed width: fill the container
+    document.body.style.width = "100%";
+  } else if (viewport.maxWidth) {
+    // Flexible with max: let content determine size, up to max
+    document.body.style.maxWidth = `${viewport.maxWidth}px`;
+  }
+  // If neither, width is unbounded
+}
+```
+
+#### Host Behavior
+
+When using flexible dimensions (no fixed `height` or `width`), hosts MUST listen for `ui/notifications/size-changed` notifications from the app and update the iframe dimensions accordingly:
+
+```typescript
+// Host listens for size changes from the app
+bridge.onsizechange = ({ width, height }) => {
+  // Update iframe to match app's content size
+  if (width != null) {
+    iframe.style.width = `${width}px`;
+  }
+  if (height != null) {
+    iframe.style.height = `${height}px`;
+  }
+};
+```
+
+Apps using the SDK automatically send size-changed notifications via ResizeObserver when `autoResize` is enabled (the default). The notifications are debounced and only sent when dimensions actually change.
 
 ### Theming
 

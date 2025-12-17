@@ -1008,7 +1008,7 @@ export class AppBridge extends Protocol<
    * ```typescript
    * bridge.setHostContext({
    *   theme: "dark",
-   *   viewport: { width: 800, height: 600 }
+   *   viewport: { width: 800, maxHeight: 600 }
    * });
    * ```
    *
