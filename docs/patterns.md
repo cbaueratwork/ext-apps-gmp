@@ -499,7 +499,7 @@ await app.sendMessage({
 
 ## Persisting view state
 
-To persist view state across conversation reloads (e.g., current page in a PDF viewer, camera position in a map), use [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) with a stable identifier provided by the server.
+For recoverable view state (e.g., current page in a PDF viewer, camera position in a map), use [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) with a stable identifier provided by the server.
 
 **Server-side**: Tool handler generates a unique `viewUUID` and returns it in `CallToolResult._meta.viewUUID`:
 
@@ -561,8 +561,10 @@ app.ontoolresult = (result) => {
 // e.g., saveState({ currentPage: 5 });
 ```
 
+For state that represents user effort (e.g., saved bookmarks, annotations, custom configurations), consider persisting it server-side using [app-only tools](#tools-that-are-private-to-apps) instead. Pass the `viewUUID` to the app-only tool to scope the saved data to that view instance.
+
 > [!NOTE]
-> For full examples that implement this pattern, see: [`examples/pdf-server/`](https://github.com/modelcontextprotocol/ext-apps/tree/main/examples/pdf-server) (persists current page) and [`examples/map-server/`](https://github.com/modelcontextprotocol/ext-apps/tree/main/examples/map-server) (persists camera position).
+> For full examples using `localStorage`, see: [`examples/pdf-server/`](https://github.com/modelcontextprotocol/ext-apps/tree/main/examples/pdf-server) (persists current page) and [`examples/map-server/`](https://github.com/modelcontextprotocol/ext-apps/tree/main/examples/map-server) (persists camera position).
 
 ## Pausing computation-heavy views when offscreen
 
